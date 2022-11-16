@@ -1,0 +1,255 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+{% block stylesheet %}
+<style>
+.ec-pageHeader{
+    text-align: center;
+}
+.ec-pageHeader h1{
+    font-size:2.2rem;
+    text-align: center;
+    border-top:none;
+    display: inline-block;
+    margin-bottom:2rem;
+}
+.ec-AddAddress .ec-AddAddress__itemtTitle{
+    font-weight: normal;
+    margin-top:1rem;
+}
+.ec-AddAddress .ec-AddAddress__info{
+    text-align: left;
+}
+.ec-AddAddress .ec-AddAddress__add{
+    border:solid 1px #6d9c00;
+    border-radius: 8px;
+    padding:2rem;
+}
+.ec-AddAddress .ec-AddAddress__item{
+    background: white;
+    padding: 0;
+}
+.ec-AddAddress .ec-AddAddress__itemThumb,.ec-AddAddress .ec-AddAddress__itemtContent{
+    display: block;
+    padding-left:0;
+    width: 100%;
+}
+.ec-AddAddress .ec-AddAddress__selectNumber,.ec-AddAddress__btn,.ec-AddAddress .ec-AddAddress__itemtPrice{
+    display: none;
+}
+.ec-AddAddress .ec-AddAddress__actions .ec-blockBtn--action,.ec-blockBtn--cancel{
+    border:solid 1px #6d9c00;
+    border-radius:8px;
+    margin-bottom:1.5rem;
+}
+.ec-blockBtn--action{
+    color:white;
+    background:#6d9c00;
+}
+.ec-blockBtn--cancel{
+    color:black;
+    background: none;
+}
+.ec-blockBtn--cancel:hover{
+    background: white;
+    color:black;
+    background:#6d9c00;
+    opacity: 0.6;
+}
+.ec-blockBtn--cancel2{
+    line-height: 1.2;
+    padding-top:1.2rem;
+}
+.ec-blockBtn--cancel2 span{
+    font-size:1.1rem;    
+    font-weight: normal;
+}
+.ec-blockBtn--cancel:last-child{
+    height: 3.5rem;
+    line-height: 2.5;
+}
+@media screen and (min-width:768px){
+.ec-off4Grid .ec-off4Grid__cell{
+    width:66%;
+    margin: 3rem auto;
+}
+}
+@media screen and (min-width:1200px){
+.multiple_list__items-wrap{
+    display: flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+}
+.multiple_list__items-wrap .ec-AddAddress__add{
+    width: 48%;
+}
+}
+</style>
+{% endblock %}
+{% block javascript %}
+<script>
+$(function() {
+    $('.add').click(function() {
+        var data = $(this).data();
+        var idx = data.idx;
+        var itemIdx = 0;
+        var item = $('#item' + idx);
+        var row = $('#item' + idx + '-0');
+
+        // 既存のお届け先のrowをコピーして雛形とする
+        var addrow = $(row).clone();
+
+        // 追加する要素のIndexを決定
+        item.find('.shipping_item').each(function() {
+            itemIdx = $(this).attr('data-itemidx');
+        });
+        itemIdx = 1 + parseInt(itemIdx);
+
+        // 行のID設定
+        addrow.attr('id', 'item' + idx + '-' + itemIdx);
+        addrow.attr('data-itemidx', itemIdx);
+
+        // お届け先セレクトボックスのIDとNAME設定
+        addrow.find('select').attr('name', 'form[shipping_multiple][' + idx + '][shipping][' + itemIdx + '][customer_address]');
+        addrow.find('select').attr('id', 'form_shipping_multiple_' + idx + '_shipping_' + itemIdx + '_customer_address');
+
+        // 数量のINPUTのIDとNAME設定
+        addrow.find('input').attr('name', 'form[shipping_multiple][' + idx + '][shipping][' + itemIdx + '][quantity]');
+        addrow.find('input').attr('id', 'form_shipping_multiple_' + idx + '_shipping_' + itemIdx + '_quantity');
+
+        // その他、divやbuttonのID設定
+        addrow.find('[id*="multiple_list__shipping_address"]').attr('id', 'multiple_list__shipping_address--' + idx + '_' + itemIdx + '');
+        addrow.find('[id*="multiple_list__shipping_quantity"]').attr('id', 'multiple_list__shipping_quantity--' + idx + '_' + itemIdx + '');
+        addrow.find('button').each(function() {
+            $(this).attr('id', 'button__delete--' + idx + '_' + itemIdx + '');
+            $(this).attr('data-itemidx', idx + '-' + itemIdx);
+            $(this).data('itemidx', idx + '-' + itemIdx);
+            $(this).removeAttr('style');
+        });
+
+        $(item).append($(addrow));
+    });
+
+    $(document).on('click', '.delete', function() {
+        var data = $(this).data();
+        $('#item' + data.itemidx).remove();
+    });
+
+});
+</script>
+{% endblock javascript %}
+
+{% block main %}
+<main id="about">
+<div class="container">
+
+    <div class="ec-role">
+        <div class="ec-pageHeader">
+            <h1>お届け先の指定</h1>
+        </div>
+    </div>
+
+    <div class="ec-AddAddress">
+        <form id="shipping-multiple-form" method="post" action="{{ url('shopping_shipping_multiple') }}">
+            {{ form_widget(form._token) }}
+            <div class="ec-AddAddress__info">
+                <p>お申込者の住所以外へお礼の品をお届けするには、お届け先を選択してください。</p>
+            </div>
+
+            {% for error in errors %}
+                <div class="text-danger">{{ error.message }}</div>
+            {% endfor %}
+
+            <div class="multiple_list__items-wrap">
+            {% for orderItem in OrderItems %}
+            {% set ProductClass = orderItem.ProductClass %}
+            {% set Product = ProductClass.Product %}
+                {% set idx = loop.index0 %}
+                {% set itemvalue = 0 %}
+                <div id="multiple_list__item_box--{{ idx }}" class="ec-AddAddress__add">
+                    <div class="ec-AddAddress__item">
+                        <div class="ec-AddAddress__itemThumb">
+                            <img src="{{ asset(Product.MainListImage|no_image_product, 's3_image') }}">
+                        </div>
+                        <div class="ec-AddAddress__itemtContent">
+                            <div class="ec-AddAddress__itemtTitle">{{ orderItem.productName }}
+                            </div>
+                            {% if orderItem.productClass.classCategory1 %}
+                                <div class="ec-AddAddress__itemtSize">{{ orderItem.productClass.classCategory1 }}</div>
+                            {% endif %}
+                            {% if orderItem.productClass.classCategory2 %}
+                                <div class="ec-AddAddress__itemtSize">{{ orderItem.productClass.classCategory2 }}</div>
+                            {% endif %}
+                            <div class="ec-AddAddress__itemtPrice">{{ 'common.subtotal__with_separator'|trans }}{{ orderItem.totalPrice|price }}</div>
+
+                            {% for key, value in compItemQuantities %}
+                                {% if orderItem.productClass.id == key %}
+                                    <div class="ec-AddAddress__itemtNumber" id="multiple_list__value--{{ idx }}_{{ key }}">{{ 'common.quantity'|trans }}：{{ value }}</div>
+                                    {% set itemvalue = value %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div id="item{{ idx }}">
+                        {% for shipping in form.shipping_multiple[idx].shipping %}
+                            <div id="item{{ idx }}-{{ loop.index0 }}" data-itemidx="{{ loop.index0 }}" class="ec-AddAddress__select shipping_item item{{ idx }}">
+                                <div id="multiple_list__shipping_address--{{ idx }}_{{ loop.index0 }}" class="ec-AddAddress__selectAddress">
+                                    <div class="ec-select">
+                                        <label>{{ 'front.shopping.delivery_to'|trans }}</label>
+                                        {{ form_widget(shipping.customer_address, {'attr': {'class': 'shipping'}}) }}
+                                        {{ form_errors(shipping.customer_address) }}
+                                    </div>
+                                </div>
+                                <div id="multiple_list__shipping_quantity--{{ idx }}_{{ loop.index0 }}" class="ec-AddAddress__selectNumber">
+                                    <div class="ec-input">
+                                        <label>{{ 'common.quantity'|trans }}</label>
+                                        {% for key, value in compItemQuantities %}
+                                            {% if orderItem.productClass.id == key %}
+                                                {% set quantity = shipping.quantity.vars.value ?: value %}
+                                                {{ form_widget(shipping.quantity, {'attr': {'class': 'quantity'}, 'value': quantity}) }}
+                                                {{ form_errors(shipping.quantity) }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <button id="button__delete--{{ idx }}_{{ loop.index0 }}" type="button" class="btn ec-inlineBtn delete"
+                                        {% if loop.index0 == 0 %}style="display:none;"{% endif %}
+                                        data-itemidx="{{ idx }}-{{ loop.index0 }}">{{'common.delete'|trans}}</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div id="multiple_list__add_button{{ idx }}" class="ec-AddAddress__btn">
+                        <button id="button__add{{ idx }}" type="button" class="ec-inlineBtn add" data-idx="{{ idx }}">{{ 'front.shopping.shipping_add_new_shipping__short'|trans }}</button>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            
+            <div class="ec-AddAddress__actions">
+                <div class="ec-off4Grid">
+                    <div class="ec-off4Grid__cell">
+                        <button id="button__confirm" type="submit" class="ec-blockBtn--action">{{ 'front.shopping.shipping_send_selected_shipping'|trans }}</button>
+                        <a class="ec-blockBtn--cancel ec-blockBtn--cancel2" href="{{ url('shopping_shipping_multiple_edit') }}">新しいお届け先に送る<br><span>新規お届け先を追加</span></a>
+                        <a class="ec-blockBtn--cancel ec-blockBtn--cancel2" href="{{ url('mypage_delivery') }}">登録したお届け先の修正<br><span>お届け先の一覧へ</span></a>
+                        <a class="ec-blockBtn--cancel" href="{{ url('shopping') }}">前の画面に戻る</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    
+</div>
+</main>
+{% endblock %}

@@ -1,0 +1,504 @@
+{% extends 'default_frame.twig' %}
+{% set body_class = 'product_page' %}
+
+{#author :MT start #}
+{% block stylesheet %}
+<style>
+    #gift.detail .floating_cart .default .go-cart.disabled,#gift.detail .floating_cart .default .go-cart.disabled:hover{
+        background:gray;
+        color:white;
+    }
+</style>
+{% endblock %}
+{#author :MT end #}
+
+{% block javascript %}
+<script>
+    eccube.classCategories = {{ class_categories_as_json(Product)|raw }};
+
+        // 規格2に選択肢を割り当てる。
+        function fnSetClassCategories(form, classcat_id2_selected) {
+            var $form = $(form);
+            var product_id = $form.find('input[name=product_id]').val();
+            var $sele1 = $form.find('select[name=classcategory_id1]');
+            var $sele2 = $form.find('select[name=classcategory_id2]');
+            eccube.setClassCategories($form, product_id, $sele1, $sele2, classcat_id2_selected);
+        }
+
+        {% if form.classcategory_id2 is defined %}
+        fnSetClassCategories(
+            $('#form1'), {{ form.classcategory_id2.vars.value|json_encode|raw }}
+        );
+        {% elseif form.classcategory_id1 is defined %}
+        eccube.checkStock($('#form1'), {{ Product.id }}, {{ form.classcategory_id1.vars.value|json_encode|raw }}, null);
+        {% endif %}
+    </script>
+    <script>
+        $(function() {
+            // bfcache無効化
+            $(window).bind('pageshow', function(event) {
+                if (event.originalEvent.persisted) {
+                    location.reload(true);
+                }
+            });
+
+            $('.item_visual').slick({
+                dots: false,
+                arrows: false,
+                responsive: [{
+                    breakpoint: 768,
+                    settings: {
+                        dots: true
+                    }
+                }]
+            });
+
+            $('.slideThumb').on('click', function() {
+                var index = $(this).attr('data-index');
+                $('.item_visual').slick('slickGoTo', index, false);
+            })
+        });
+    </script>
+    <script>
+        $(function() {
+            $('.add-cart').on('click', function(event) {
+                {% if form.classcategory_id1 is defined %}
+                // 規格1フォームの必須チェック
+                if ($('#classcategory_id1').val() == '__unselected' || $('#classcategory_id1').val() == '') {
+                    $('#classcategory_id1')[0].setCustomValidity('{{ 'front.product.product_class_unselected'|trans }}');
+                    return true;
+                } else {
+                    $('#classcategory_id1')[0].setCustomValidity('');
+                }
+                {% endif %}
+
+                {% if form.classcategory_id2 is defined %}
+                // 規格2フォームの必須チェック
+                if ($('#classcategory_id2').val() == '__unselected' || $('#classcategory_id2').val() == '') {
+                    $('#classcategory_id2')[0].setCustomValidity('{{ 'front.product.product_class_unselected'|trans }}');
+                    return true;
+                } else {
+                    $('#classcategory_id2')[0].setCustomValidity('');
+                }
+                {% endif %}
+
+                // 個数フォームのチェック
+                if ($('#quantity').val() < 1) {
+                    $('#quantity')[0].setCustomValidity('{{ 'front.product.invalid_quantity'|trans }}');
+                    return true;
+                } else {
+                    $('#quantity')[0].setCustomValidity('');
+                }
+
+                event.preventDefault();
+                $form = $('#form1');
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: $form.attr('method'),
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        // Buttonを無効にする
+                        $('.add-cart').prop('disabled', true);
+                    }
+                }).done(function(data) {
+                    // レスポンス内のメッセージをalertで表示
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+
+//default                    $('.ec-modal').show()
+                    $('.addition').show()
+
+                    // カートブロックを更新する
+                    $.ajax({
+                        url: "{{ url('block_cart') }}",
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function(html) {
+                    $('.ec-headerRole__cart').html(html);
+                    });
+                }).fail(function(data) {
+                    alert('{{ 'front.product.add_cart_error'|trans }}');
+                }).always(function(data) {
+                    // Buttonを有効にする
+                    $('.add-cart').prop('disabled', false);
+                });
+            });
+        });
+
+//default        $('.ec-modal-wrap').on('click', function(e) {
+        $('.addition').on('click', function(e) {
+            // モーダル内の処理は外側にバブリングさせない
+            e.stopPropagation();
+        });
+//default $('.ec-modal-overlay, .ec-modal, .ec-modal-close, .ec-inlineBtn--cancel').on('click', function() {
+//default $('.ec-modal').hide()
+        $('.go-cart').on('click', function() {
+            $('.addition').hide()
+        });
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": "{{ Product.name }}",
+        "image": [
+            {% for img in Product.ProductImage %}
+                "{{ asset(img, 's3_image') }}"{% if not loop.last %},{% endif %}
+
+            {% else %}
+                "{{ app.request.schemeAndHttpHost }}{{ asset(''|no_image_product, 'save_image') }}"
+            {% endfor %}
+        ],
+        "description": "{{ Product.description_list | default(Product.description_detail) | replace({'\n': '', '\r': ''}) | slice(0,300) }}",
+        {% if Product.code_min %}
+        "sku": "{{ Product.code_min }}",
+        {% endif %}
+        "offers": {
+            "@type": "Offer",
+            "url": "{{ url('product_detail', {'id': Product.id}) }}",
+            "priceCurrency": "{{ eccube_config.currency }}",
+            "price": "{{ Product.getPrice02IncTaxMin }}",
+            "availability": "{{ Product.stock_find ? "InStock" : "OutOfStock" }}"
+        }
+    }
+    </script>
+{% endblock %}
+
+
+
+{% block main %}
+    <main id="gift" class="detail">
+        <div class="container">
+
+
+            {# ##################	カートに入れるボタン #}
+
+            <div class="floating_cart">
+                <style>.floating_cart .form-group {
+                        display: none;
+                    }</style>
+
+                <div class="addition">
+                    <button
+                        onclick="location.href='{{ url('product_list') }}?orderby={{ eccube_config.eccube_product_order_newer }}'">
+                        <span>{{ 'front.product.continue'|trans }}</span></button>
+                    <button onclick="location.href='{{ url('cart') }}'">{{ 'common.go_to_cart'|trans }}</button>
+                </div>
+
+                <form action="{{ url('product_add_cart', {id:Product.id}) }}" method="post" id="form1" name="form1">
+                        <div class="default"><p class="price">
+                                寄付金額<span>{{ Product.getPrice02IncTaxMin|number_format }}</span>円</p>
+
+                            {#author :MT start#}
+                            {% if  Product.applicable_on_from != null and Product.applicable_on_from > date() %}
+                            <button type="submit" class="add-cart go-cart disabled" disabled>{{Product.applicable_on_from|date_format('', 'm月d日')}}より受付開始</button>
+                            {% elseif Product.applicable_on_to != null and Product.applicable_on_to < date() %}
+                            <button type="submit" class="add-cart go-cart disabled" disabled>受付終了</button>
+                            {% elseif Product.stock_find == 0 or Product.out_of_stock == 1 %}
+                            <button type="submit" class="add-cart go-cart disabled" disabled>品切れ中</button>
+                            {% else %}
+                            <button type="submit" class="add-cart go-cart">{{ 'front.product.add_cart'|trans }}</button>
+                            {% endif %}
+                            {#author :MT end#}
+
+                        </div>
+                        {#
+                        <div class="ec-productRole__actions">
+                                        {% if form.classcategory_id1 is defined %}
+                                            <div class="ec-select">
+                                                {{ form_widget(form.classcategory_id1) }}
+                                                {{ form_errors(form.classcategory_id1) }}
+                                            </div>
+                                            {% if form.classcategory_id2 is defined %}
+                                                <div class="ec-select">
+                                                    {{ form_widget(form.classcategory_id2) }}
+                                                    {{ form_errors(form.classcategory_id2) }}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                        <div class="ec-numberInput"><span>{{ 'common.quantity'|trans }}</span>
+                                            {{ form_widget(form.quantity) }}
+                                            {{ form_errors(form.quantity) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="ec-productRole__btn">
+                                        <button type="submit" class="ec-blockBtn--action add-cart">
+                                            {{ 'front.product.add_cart'|trans }}
+                                        </button>
+                                    </div>
+                        #}
+
+
+                    {{ form_rest(form) }}
+
+                </form>
+
+            </div>
+
+
+            <section class="sec1">
+
+
+                {# ##################	返礼品スライド #}
+                <div class="Lside">
+                    <div id="thum-slide" class="slider-pro">
+                        <ul class="sp-thumbnails">
+                            {% for ProductImage in Product.ProductImage %}
+                                <li class="sp-thumbnail">
+                                    <img class="b-pic"
+                                         src="{{ asset(ProductImage.file_name|no_image_product, 's3_image') }}"
+                                         alt="{{ Product.name }}" loading="lazy">
+                                    <div class="c-pic">
+                                        <img
+                                            src="{{ asset(ProductImage.file_name|no_image_product, 's3_image') }}"
+                                            alt="{{ Product.name }}" loading="lazy">
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <ul class="sp-slides">
+                            {%  if(Product.ProductImage.count()) %}
+                            {% for ProductImage in Product.ProductImage %}
+                                <li class="sp-slide">
+                                    <div class="sp-image">
+                                        <img class="b-pic"
+                                             src="{{ asset(ProductImage.file_name|no_image_product, 's3_image') }}"
+                                             alt="{{ Product.name }}" loading="lazy">
+                                        <div class="c-pic">
+                                            <img
+                                                src="{{ asset(ProductImage.file_name|no_image_product, 's3_image') }}"
+                                                alt="{{ Product.name }}" loading="lazy">
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                            {% else %}
+                            <li class="sp-slide">
+                                <div class="sp-image">
+                                    <img class="b-pic"
+                                         src="{{ asset(''|no_image_product, 's3_image') }}"
+                                         alt="no_image_product" loading="lazy">
+                                    <div class="c-pic">
+                                        <img
+                                            src="{{ asset(""|no_image_product, 's3_image') }}"
+                                            alt="no_image_product" loading="lazy">
+                                    </div>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                        <ul class="marks">
+                            {# <li><a><img src="{{ asset('assets/img/arrow_left.png') }}"></a></li>#}
+                            <li class="icons">
+                                <button class="share">
+                                    <img src="{{ asset('assets/img/icon_share.png') }}">
+                                </button>
+                                {% if BaseInfo.option_favorite_product %}
+                                    {% if(is_favorite) %}
+                                    {#author :MT start #}
+                                    <form action="{{ url('refine_delete_favorite', {id:Product.id}) }}" method="post">
+                                        <button type="submit" id="favorite" class="favorite">
+                                            <i class="fa-sharp fa-solid fa-heart" style="color: #FF004E;"></i>
+                                        </button>
+                                    </form>
+                                    {#author :MT end #}
+                                    {% else %}
+                                        <button class="favorite" onclick="addFavoriteProduct({{ Product.id }})">
+                                            <i class="fa-sharp fa-solid fa-heart" style="color: gray;"></i>
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                            {#<li><a><img src="{{ asset('assets/img/arrow_left.png') }}"></a></li>
+                             <li class="icons"><button class="share"><img src="{{ asset('assets/img/icon_share.png') }}"></button><button class="favorite"><i class="fa-sharp fa-solid fa-heart"></i></button></li> #}
+                        </ul>
+                    </div>
+                </div>
+
+
+                {# ##################	返礼品詳細 #}
+                <div class="Rside">
+                    <div class="part">
+                        <h3 class="product">{{ Product.name }}</h3>
+                        <p>{{ Product.description_detail|raw|nl2br }}</p>
+                    </div>
+
+
+                    {% if Product.free_area %}
+                        <div class="part">
+                            <div class="ac-open">
+                                <div class="openimg">
+                                    <p>{{ Product.free_area|nl2br }}</p>
+                                </div>
+                            </div>
+                            <a class="btn ac-btn"><span>もっと詳しく</span></a>
+                        </div>
+                    {% else %}
+                    {% endif %}
+
+                    {# ##################	360データ項目 #}
+                    <div class="part">
+                        <h3>{{ 'お礼の品詳細'|trans }}</h3>
+
+                        {% if Product.ProductCategories is not empty %}
+                            <dl class="category">
+                                <dt>カテゴリー</dt>
+                                <dd>
+                                    {% for ProductCategory in Product.ProductCategories %}
+                                        <ul>
+                                            <li>
+                                                {% for Category in ProductCategory.Category.path %}
+                                                    <a href="{{ url('product_list') }}?category_id={{ Category.id }}">
+                                                        <span>{{ Category.name }}</span>
+                                                    </a>
+                                                    {%- if loop.last == false %}
+                                                    <span>＞</span>
+                                                    {% endif -%}
+                                                {% endfor %}
+                                            </li>
+                                        </ul>
+                                    {% endfor %}
+                                </dd>
+                            </dl>
+                        {% endif %}
+
+
+                        <dl>
+                            <dt>内容量</dt>
+                            <dd><p>{{ Product.capacity|nl2br }}</p></dd>
+                        </dl>
+                        <dl>
+                            <dt>アレルギー表示</dt>
+                            <dd>{{ Product.allergy_labeling|nl2br }}</dd>
+                        </dl>
+                        <dl>
+                            <dt>消費期限/賞味期限</dt>
+                            <dd>{{ Product.expiration_date }}</dd>
+                        </dl>
+                        {% if (Product.operator_name) %}
+                        <dl>
+                            <dt>事業者名</dt>
+                            <dd>
+                                <p class="Fbold">{{ Product.operator_name }}</p>
+                                <a class="others"
+                                   href="{{ url('product_list') }}?name={{ Product.operator_name }}">
+                                    他のお礼の品を見る
+                                </a>
+                            </dd>
+                        </dl>
+                        {% endif %}
+                        <dl>
+                            <dt>管理ID</dt>
+                            <dd>{{ Product.ProductClasses.first()?Product.ProductClasses.first().code: '' }}</dd>
+                        </dl>
+                    </div>
+
+                    <div class="part">
+                        <h3>お申し込みについて</h3>
+                        <dl>
+                            <dt>申込条件</dt>
+                            <dd>何度も申し込み可</dd>
+                        </dl>
+                        <dl>
+                            <dt>申込期日</dt>
+                            <dd>{{ Product.applicable_on }}</dd>
+                        </dl>
+                        <dl>
+                            <dt>発送期日</dt>
+                            <dd>{{ Product.delivered_on }}</dd>
+                        </dl>
+
+                        {% if Product.room_temperature_delivery == '1' %}
+                            <dl>
+                                <dt>配送方法</dt>
+                                <dd>常温配送</dd>
+                            </dl>
+                        {% elseif  Product.refrigerated_delivery == '1' %}
+                            <dl>
+                                <dt>配送方法</dt>
+                                <dd>冷蔵配送</dd>
+                            </dl>
+                        {% elseif  Product.frozen_delivery == '1' %}
+                            <dl>
+                                <dt>配送方法</dt>
+                                <dd>冷凍配送</dd>
+                            </dl>
+                        {% endif %}
+                    </div>
+
+                    {# ##################	常設 #}
+                    <div class="part">
+                        <h3>ふるさと納税の手続きについて</h3>
+                        <p>ふるさと納税は、現在居住地の自治体に対して支払っている住民税を、自分が応援したい自治体に『寄附』という形で振替納税が出来る制度です。<br>
+                            自治体への寄附金は、2,000円を超える額について、個人の年収に伴った控除額の上限内で納税が受けられます。</p>
+                    </div>
+
+
+                    {# ##################	バナー群 #}
+                    <div class="part">
+                        <h3>他のサイトから寄付する</h3>
+                        <ul class="kifu_bnrs">
+                            <li>
+                                <a href="" target="_blank">
+                                    <img src="{{ asset('assets/img/gift/kifu_bnr1.png') }}"
+                                         alt="ふるさと納税総合サイト ふるさとチョイス">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" target="_blank">
+                                    <img src="{{ asset('assets/img/gift/kifu_bnr2.png') }}"
+                                         alt="地域から日本を元気に！ 楽天ふるさと納税">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" target="_blank">
+                                    <img src="{{ asset('assets/img/gift/kifu_bnr3.png') }}"
+                                         alt="さとふる">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" target="_blank">
+                                    <img src="{{ asset('assets/img/gift/kifu_bnr4.png') }}"
+                                         alt="ふるなび">
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                    {% if BaseInfo.option_favorite_product %}
+                        {# todo 共通化したい #}
+                        <script type="text/javascript">
+                            const apiAddFavoriteProductUrl = "{{ url('api_product_add_favorite', {id: 0}) }}";
+                            function addFavoriteProduct(id)
+                            {
+                                const requestURL = apiAddFavoriteProductUrl.replace(/0$/, id);
+                                $.ajax({
+                                    url: requestURL,
+                                    type: 'post',
+                                    dataType: 'json',
+                                }).then((data) =>{
+                                    console.log(data);
+                                    window.location.reload();
+                                }).fail((error)=> {
+                                    if (error.status===406) {
+                                        window.location = '{{ url('mypage_login') }}'
+                                    }
+                                });
+                            }
+                        </script>
+
+                    {% endif %}
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+    </main>
+{% endblock %}

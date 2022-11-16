@@ -1,0 +1,29 @@
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+<main id="about">
+<div class="container">
+
+
+<div class="small container">
+<h3>お知らせ</h3>
+
+
+  <div class="news-{{ news.id }}">
+    <h6>{{ news.publish_date|date("Y/m/d") }}</h6>
+    <h4 class="uline">{{ news.title }}</h4>
+
+
+    {% if news.np_thumbnail_url == true %}
+     <div class="image"> <img src="{{ asset( news.np_thumbnail_url , 'save_image') }}" alt="{{ news.title }}"></div>
+    {% endif %}
+    <p>{{ news.description|raw|nl2br }}</p>
+
+  </div>
+
+</div>
+
+</div>
+
+</main>
+{% endblock %}

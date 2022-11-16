@@ -1,0 +1,133 @@
+<main id="top">
+<div class="pt_plus"></div>
+
+<style>
+/* --------------------------------
+  ani
+-------------------------------- */
+
+/* ------ ani_img ------- */
+.ani_img {
+  animation-duration: 15s;
+  animation-iteration-count: infinite;
+  animation-name: slideAnime;
+  animation-timing-function: ease;
+  display: block;
+  min-height: 100vh;
+  object-fit: cover;
+  opacity: 0;
+  width: 100%;
+}
+
+.ani_item:nth-of-type(1) .ani_img {
+  animation-delay: 0s;
+}
+
+.ani_item:nth-of-type(2) .ani_img {
+  animation-delay: 5s;
+}
+
+.ani_item:nth-of-type(3) .ani_img {
+  animation-delay: 10s;
+}
+
+.ani_item:nth-of-type(4) .ani_img {
+  animation-delay: 15s;
+}
+
+.ani_item:nth-of-type(5) .ani_img {
+  animation-delay: 20s;
+}
+
+.ani_item:nth-of-type(6) .ani_img {
+  animation-delay: 25s;
+}
+
+@keyframes slideAnime {
+  0% {
+    opacity: 0;
+  }
+
+  16% {
+    opacity: 1;
+  }
+
+  33% {
+    opacity: 1;
+  }
+
+  49% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+
+  }
+}
+
+/* ------ ani aerea ------- */
+.ani {
+  height: 70vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.ani_inner {
+  margin: 0 auto;
+  width: 1100px;
+}
+
+/* ------ ani title ------- */
+.ani_title {
+  font-size:max(48px, min(3vw,70px));
+  font-weight: bold;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 100%;
+  color:#fff;
+  line-height: 90px;
+  /*mix-blend-mode: overlay;*/
+}
+.ani_stitle {
+  font-size:max(18px, min(3vw,26px));
+  font-weight: bold;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 55%;
+  transform: translateY(-50%);
+  width: 100%;
+  color:#fff;
+  line-height: 40px;
+  /*mix-blend-mode: overlay;*/
+}
+
+.ani_item {
+  bottom: 0;
+  height: 100%;
+  position: absolute;
+  right: -10%;
+  width: 110%;
+}
+</style>
+
+    　<div class="ani">
+        <div class="ani_inner">
+          <div class="ani_slide">
+            <div class="ani_item"><img class="ani_img" src="{{ asset('assets/img/animeslider1.jpg','user_data') }}" loading="lazy" alt="" /></div>
+            <div class="ani_item"><img class="ani_img" src="{{ asset('assets/img/animeslider2.jpg','user_data') }}" loading="lazy" alt="" /></div>
+            <div class="ani_item"><img class="ani_img" src="{{ asset('assets/img/animeslider3.jpg','user_data') }}" loading="lazy" alt="" /></div>
+            <div class="ani_item"><img class="ani_img" src="{{ asset('assets/img/animeslider4.jpg','user_data') }}" loading="lazy" alt="" /></div>
+            <div class="ani_item"><img class="ani_img" src="{{ asset('assets/img/animeslider5.jpg','user_data') }}" loading="lazy" alt="" /></div>
+            <div class="ani_item"><img class="ani_img" src="{{ asset('assets/img/animeslider6.jpg','user_data') }}" loading="lazy" alt="" /></div>
+          </div>
+          <div class="ani_header"><div class="ani_title">北海道紋別市</div><div class="ani_stitle">オホーツクの自然とともに歩むまち</div></div>
+        </div>
+      </div>

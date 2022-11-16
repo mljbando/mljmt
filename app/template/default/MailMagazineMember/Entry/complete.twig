@@ -1,0 +1,31 @@
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'mail_magazine_entry_complete' %}
+
+{% block main %}
+<main id="about">
+<div class="container">
+
+    <div class="ec-role">
+        <div class="ec-pageHeader">
+            <h1>{{ 'mail_magazine_member.entry.complete_title'|trans }}</h1>
+        </div>
+    </div>
+    <div class="ec-registerCompleteRole">
+        <div class="ec-off3Grid ec-text-ac">
+            <div class="ec-off3Grid__cell">
+                <div class="ec-reportHeading">
+                    <h2>{{ 'mail_magazine_member.entry.complete.message_title'|trans }}</h2>
+                </div>
+                <p class="ec-reportDescription">{{ 'mail_magazine_member.entry.complete.message'|trans|nl2br }}</p>
+                <div class="ec-off4Grid">
+                    <div class="ec-off4Grid__cell"><a class="ec-blockBtn--cancel" href="{{ url('homepage') }}">{{ 'common.go_to_top'|trans }}</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</main>
+{% endblock %}

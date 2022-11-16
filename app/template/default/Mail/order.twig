@@ -1,0 +1,106 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% autoescape 'safe_textmail' %}
+{{ Order.name01 }} {{ Order.name02 }} 様
+
+紋別市へのふるさと納税の寄付お申込みを受付けいたしました。
+下記、お申込み内容となります。
+
+************************************************
+【お申込み日時】　：{{ Order.order_date|date_sec }}
+【お申込み番号】　：{{ Order.order_no }}
+
+************************************************
+　お申込者基本情報
+************************************************
+【お名前】　　　　：{{ Order.name01 }} {{ Order.name02 }} 様
+【お名前(カナ)】　：{{ Order.kana01 }} {{ Order.kana02 }} 様
+【郵便番号】　　　：〒{{ Order.postal_code }}
+【住所】　　　　　：{{ Order.Pref.name }}{{ Order.addr01 }}{{ Order.addr02 }}
+【電話番号】　　　：{{ Order.phone_number }}
+【メールアドレス】：{{ Order.email }}
+【生年月日】　　　：{{ Order.birth|date('Y/m/d', "Asia/Tokyo") }}
+【性別】　　　　　：{{ Order.sex }}
+
+************************************************
+　お申込内容
+************************************************
+【寄付金の使い道】：{{ Order.DonationPurpose? Order.DonationPurpose.name : '' }}
+
+【寄付金額合計】　：{{ Order.payment_total|price}}
+【お支払い方法】　：{{ Order.payment_method }}
+【お支払い状況】　：{{ Order.OrderStatus? Order.OrderStatus.name: '' }}
+
+【ワンストップ特例申請書の希望有無】：{{ Order.one_stop? '希望する': '希望しない' }}
+【寄付者名の公表の有無】：{{ Order.name_announce? '公表する': '公表しない' }}
+
+【応援メッセージの公表の有無】：{{ Order.cheer_message_publish? '公表する': '公表しない' }}
+【応援メッセージ】：{{ Order.cheer_message }}
+
+【備考記入内容】　：{{ Order.offer_memo }}
+
+
+{{ Order.message }}
+
+************************************************
+　お申込み内容詳細
+************************************************
+{%  for Shipping in Order.Shippings %}
+◎お届け先{% if Order.multiple %}{{ loop.index }}{% endif %}
+
+【お名前】　　　　：{{ Shipping.name01 }} {{ Shipping.name02 }} 様
+【お名前(カナ)】　：{{ Shipping.kana01 }} {{ Shipping.kana02 }} 様
+【郵便番号】　　　：〒{{ Shipping.postal_code }}
+【住所】　　　　　：{{ Shipping.Pref.name }}{{ Shipping.addr01 }}{{ Shipping.addr02 }}
+【電話番号】　　　：{{ Shipping.phone_number }}
+
+【配送方法】　　　：{{ Shipping.shipping_delivery_name }}
+
+{%  for OrderItem in Shipping.productOrderItems %}
+【お礼の品コード】：{{ OrderItem.product_code }}
+【お礼の品名称】　：{{ OrderItem.product_name }}  {{ OrderItem.classcategory_name1 }}  {{ OrderItem.classcategory_name2 }}
+【数量】　　　　　：{{ OrderItem.quantity|number_format }}
+【寄付金額】　　　：{{ OrderItem.price_inctax|price }}
+
+{% endfor %}
+{% endfor %}
+==============================
+【寄付金合計】　　：{{ Order.taxable_total|price }}
+==============================
+
+
+
+============================================
+●寄付に関するお問い合わせは下記までお問い合わせください。
+
+【紋別市ふるさと納税お問い合わせ】
+TEL：0120-04-9791
+FAX：0158-23-1833
+
+●ふるさと納税ワンストップ特例制度を利用される方へ
+※ふるさと納税ワンストップ特例制度の申請を行う場合、ふるさと納税を行った翌年の1月10日までに必着で、ワンストップ特例申請書（寄附金税額控除に係る申告特例申請書）と必要な添付書類を、下記住所へ郵送してください。
+→必要書類についてはこちらをご覧ください。https://mombetsu.furusato-direct.jp/guide
+
+【ワンストップ特例申請書類の送付先】
+〒320-8790
+日本郵便株式会社 宇都宮中央郵便局
+私書箱第64号 株式会社新朝プレス
+
+============================================
+{% if Order.complete_mail_message is not empty %}
+{{ Order.complete_mail_message }}
+{% endif %}
+
+このメッセージはお知らせ専用です。
+このメッセージへの返信としてご質問をお送りいただいても回答できません。
+ご了承ください。
+
+{% endautoescape %}

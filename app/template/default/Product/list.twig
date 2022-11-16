@@ -1,0 +1,241 @@
+{% extends 'default_frame.twig' %}
+{% set body_class = 'product_page' %}
+
+{#author :MT start #}
+{% block stylesheet %}
+<style>
+.status-wrap{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 40;
+}
+.status-wrap p{
+    color:white;
+    font-size: 2.5rem;
+    position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+}
+@media screen and (max-width:768px){
+    font-size:1.75rem;
+}
+</style>
+{% endblock %}
+{#author :MT end #}
+
+{% block javascript %}
+    <script>
+        eccube.productsClassCategories = {
+            {% for Product in pagination %}
+            "{{ Product.id|escape('js') }}": {{ class_categories_as_json(Product)|raw }}{% if loop.last == false %}, {% endif %}
+            {% endfor %}
+        };
+
+        $(function() {
+
+            // 表示件数を変更
+            $('.disp-number').change(function() {
+                var dispNumber = $(this).val();
+                $('#disp_number').val(dispNumber);
+                $('#pageno').val(1);
+                $("#form1").submit();
+            });
+
+            // 並び順を変更
+            $('.order-by').change(function() {
+                var orderBy = $(this).val();
+                $('#orderby').val(orderBy);
+                $('#pageno').val(1);
+                $("#form1").submit();
+            });
+
+            $('.add-cart').on('click', function(e) {
+                var $form = $(this).parents('li').find('form');
+
+                // 個数フォームのチェック
+                var $quantity = $form.parent().find('.quantity');
+                if ($quantity.val() < 1) {
+                    $quantity[0].setCustomValidity('{{ 'front.product.invalid_quantity'|trans }}');
+                    setTimeout(function() {
+                        loadingOverlay('hide');
+                    }, 100);
+                    return true;
+                } else {
+                    $quantity[0].setCustomValidity('');
+                }
+                e.preventDefault();
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: $form.attr('method'),
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        // Buttonを無効にする
+                        $('.add-cart').prop('disabled', true);
+                    }
+                }).done(function(data) {
+                    // レスポンス内のメッセージをalertで表示
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+
+                    $('.ec-modal').show()
+
+                    // カートブロックを更新する
+                    $.ajax({
+                        url: '{{ url('block_cart') }}',
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function(html) {
+                        $('.ec-headerRole__cart').html(html);
+                    });
+                }).fail(function(data) {
+                    alert('{{ 'front.product.add_cart_error'|trans }}');
+                }).always(function(data) {
+                    // Buttonを有効にする
+                    $('.add-cart').prop('disabled', false);
+                });
+            });
+        });
+
+        $('.ec-modal-wrap').on('click', function(e) {
+            // モーダル内の処理は外側にバブリングさせない
+            e.stopPropagation();
+        });
+        $('.ec-modal-overlay, .ec-modal, .ec-modal-close, .ec-inlineBtn--cancel').on('click', function() {
+            $('.ec-modal').hide()
+        });
+    </script>
+{% endblock %}
+
+
+
+{% block main %}
+<main id="gift" class="list">
+<div class="pt_plus"></div>
+<div class="container">
+
+{% if search_form.category_id.vars.errors|length > 0 %}
+     <div class="ec-searchnavRole">
+         <p class="errormsg text-danger">{{ 'front.product.search__category_not_found'|trans }}</p>
+     </div>
+{% else %}
+
+<form name="form1" id="form1" method="get" action="?">
+    {% for item in search_form %}
+        <input type="hidden" id="{{ item.vars.id }}" name="{{ item.vars.full_name }}" {% if item.vars.value is not empty %}value="{{ item.vars.value }}" {% endif %}/>
+    {% endfor %}
+</form>
+
+{###################title / button select#}
+<ul class="pagehead">
+<li><h3>{{ 'お礼の品一覧'|trans }}</h3>
+{% if pagination.totalItemCount > 0 %}
+   {{ 'front.product.search_result__detail'|trans({ '%count%': pagination.totalItemCount })|raw }}
+{% else %}
+   {{ 'front.product.search__product_not_found'|trans }}
+{% endif %}
+</li>
+
+<li class="btns">
+<button class="filter" id="popupbtnf"><span>フィルター</span></button>
+{% if pagination.totalItemCount > 0 %}
+<div class="selectwrap">
+{#{{ form_widget(disp_number_form, {'id': '', 'attr': {'class': 'disp-number'}}) }}#}
+{{ form_widget(order_by_form, {'id': '', 'attr': {'class': 'order-by'}}) }}
+</div>
+{% endif %}
+</li>
+</ul>
+
+
+
+{###################Product aera#}
+<ul class="p-box">
+
+{% if pagination.totalItemCount > 0 %}
+   {% for Product in pagination %}
+   
+   {#author :MT start#}
+    {% if Product.out_of_print == 0 %}
+        {% if (Product.published_at_from  <= date() or Product.published_at_from == null) and (Product.published_at_to  > date() or Product.published_at_to == null) %}
+            {% set publish_p =1 %}
+        {% else %}
+            {% set publish_p =0 %}
+        {% endif %}
+    {% else %}
+        {% set publish_p =0 %}
+    {% endif %}
+{% if publish_p == 1 %}
+{#author :MT end#}
+
+<li>
+<a href="{{ url('product_detail', {'id': Product.id}) }}">
+<div class="mask">
+    
+    {#author :MT start#}
+    {% if  Product.applicable_on_from != null and Product.applicable_on_from > date() %}
+    <div class="status-wrap"><p>{{Product.applicable_on_from|date_format('', 'm月d日')}}より<br>受付開始</p></div>
+    {% elseif Product.applicable_on_to != null and Product.applicable_on_to < date() %}
+    <div class="status-wrap"><p>受付終了</p></div>
+    {% elseif Product.stock_find == 0 or Product.out_of_stock == 1 %}
+    <div class="status-wrap"><p>品切れ中</p></div>
+    {% endif %}
+    {#author :MT end#}
+    
+{#<button class="favorite red"><i class="fa-sharp fa-solid fa-heart"></i></button>#}
+<img class="b-pic" src="{{ asset(Product.main_list_image|no_image_product, 's3_image') }}" alt="{{ Product.name }}" loading="lazy"><div class="c-pic"><img src="{{ asset(Product.main_list_image|no_image_product, 's3_image') }}" alt="{{ Product.name }}" loading="lazy"></div>
+<div class="price"><p>寄付金額<span>{{ Product.getPrice02IncTaxMin|number_format }}</span>円</p></div>
+</div>
+<p class="product_name">{{ Product.name }}</p>
+</a>
+
+
+</li>
+
+{#author :MT start#}
+{% endif %}
+{#author :MT end#}
+
+   {% endfor %}
+</ul>
+
+
+<div class="ec-modal">
+    <div class="ec-modal-overlay">
+        <div class="ec-modal-wrap">
+            <span class="ec-modal-close"><span class="ec-icon"><img src="{{ asset('assets/icon/cross-dark.svg') }}" alt=""/></span></span>
+            <div id="ec-modal-header" class="text-center">{{ 'front.product.add_cart_complete'|trans }}</div>
+            <div class="ec-modal-box">
+                <div class="ec-role">
+                    <span class="ec-inlineBtn--cancel">{{ 'front.product.continue'|trans }}</span>
+                    <a href="{{ url('cart') }}" class="ec-inlineBtn--action">{{ 'common.go_to_cart'|trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="ec-pagerRole">
+    {% include "pager.twig" with {'pages': pagination.paginationData} %}
+</div>
+        {% endif %}
+{% endif %}
+
+
+
+<ul class="pankuzu">
+<li><a href="../">HOME</a></li><li>お礼の品一覧</li>
+</ul>
+</div><!--/container-->
+
+</main>    
+{% endblock %}

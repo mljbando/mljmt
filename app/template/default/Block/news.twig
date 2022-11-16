@@ -1,0 +1,15 @@
+{% set NewsList = repository('Eccube\\Entity\\News').getList() %}
+
+<div class="container">
+<section class="intro">
+<div class="pickup">
+{% set break = false %}
+{% for index , News in NewsList if not break  %}
+<a href="#newslink{#{{ url('news_detail', {'id': News.id}) }}#}" class="ec-newsRole__newsTitle"><p class="date">{{ News.publish_date|date_day }}</p><p class="text">{{ News.title }}</p></a>
+</div>
+{% if index >= 0 %}
+{% set break = true %}
+{% endif %}
+{% endfor %}
+</section>
+</div>

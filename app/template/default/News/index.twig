@@ -1,0 +1,35 @@
+{% extends 'default_frame.twig' %}
+
+{% block main %}
+<main id="about">
+<div class="container">
+
+<h3>お知らせ</h3>
+<ul class="news">
+
+  {% if pagination.totalItemCount > 0 %}
+    {% for News in pagination %}
+<li>
+{% if News.url %}
+    <a href="{{ News.url }}" {% if News.link_method == '1' %}target="_blank"{% endif %} class="ec-newsRole__newsTitle">
+{% else %}
+    <a href="{{ url('news_detail', {'id': News.id}) }}" class="ec-newsRole__newsTitle">
+{% endif %}
+        <p class="date">{{ News.publish_date|date_day }}</p><p class="text">{{ News.title }}</p>
+    </a>
+</li>
+    {% endfor %}
+  {% else %}
+    <p class="text">{{ 'まだニュースはありません。'|trans }}</p>
+  {% endif %}
+  
+
+  <div class="ec-pagerRole">
+      {% include "pager.twig" with {'pages': pagination.paginationData} %}
+  </div>
+
+
+</div>
+
+</main>
+{% endblock %}

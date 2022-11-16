@@ -1,0 +1,89 @@
+{% set Products = repository('Plugin\\rankingsale\\Entity\\rankingsaleConfig').getProductRanking %}
+{% set Config = repository('Plugin\\rankingsale\\Entity\\rankingsaleConfig').get %}
+
+<style>
+.status-wrap{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 40;
+}
+.status-wrap p{
+    color:white;
+    font-size: 2.5rem;
+    position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+}
+@media screen and (max-width:768px){
+    font-size:1.75rem;
+}
+</style>
+
+<div class="container">
+
+<section class="ranking">
+<h3>人気ランキング</h3>
+{% if Products == null %}
+<p>商品は見つかりませんでした。</p>
+{% else %}
+<ul class="p-box">
+{% for Product in Products %}
+    {#author :MT start#}
+    {% if Product.out_of_print == 0 %}
+        {% if (Product.published_at_from  <= date() or Product.published_at_from == null) and (Product.published_at_to  > date() or Product.published_at_to == null) %}
+            {% set publish_p =1 %}
+        {% else %}
+            {% set publish_p =0 %}
+        {% endif %}
+    {% else %}
+        {% set publish_p =0 %}
+    {% endif %}
+{% if publish_p == 1 %}
+{#author :MT end#}
+
+<li>
+    <a href="{{ url('product_detail', {'id': Product.id}) }}" class="uic-itemrank__box rankingsale">
+        <div class="mask">
+            
+            {#author :MT start#}
+            {% if  Product.applicable_on_from != null and Product.applicable_on_from > date() %}
+            <div class="status-wrap"><p>{{Product.applicable_on_from|date_format('', 'm月d日')}}より<br>受付開始</p></div>
+            {% elseif Product.applicable_on_to != null and Product.applicable_on_to < date() %}
+            <div class="status-wrap"><p>受付終了</p></div>
+            {% elseif Product.stock_find == 0 or Product.out_of_stock == 1 %}
+            <div class="status-wrap"><p>品切れ中</p></div>
+            {% endif %}
+            {#author :MT end#}
+            
+            <div class="ranktag">{{ loop.index }}</div>
+            <button class="favorite"><i class="fa-sharp fa-solid fa-heart"></i></button>
+            <img class="b-pic" src="{{ asset(Product.main_list_image|no_image_product, 's3_image') }}" alt="{{ Product.name }}" loading="lazy">
+            <div class="c-pic"><img src="{{ asset(Product.main_list_image|no_image_product, 's3_image') }}" alt="{{ Product.name }}" loading="lazy"></div>
+            <div class="price"><p>寄付金額<span>{% if Config.item_price == 0 %}{{ Product.getPrice02IncTaxMax|number_format }}{% endif %}</span>円</p></div>
+        </div>
+        <p class="product_name">{% if Config.item_name == 0 %}{{ Product.name }}{% endif %}</p>
+    </a>
+</li>
+
+{#author :MT start#}
+{% endif %}
+{#author :MT end#}
+
+{% endfor %}
+</ul>
+{#
+<div class="ac-open"></div>
+<a class="btn ac-btn"><span>もっと見る</span></a>
+#}
+</section>
+
+{% endif %}
+
+</div>

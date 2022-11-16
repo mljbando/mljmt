@@ -1,0 +1,66 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set mypageno = 'change' %}
+
+{% set body_class = 'mypage' %}
+
+{#author :MT start #}
+{% block stylesheet %}
+<style>
+.ec-off4Grid{
+    margin-bottom:3rem;
+}
+.return-shopping{
+}    
+</style>
+{% endblock %}
+{#author :MT end #}
+
+{% block main %}
+<main id="about">
+<div class="container">
+
+    <div class="ec-layoutRole__main">
+        <div class="ec-mypageRole">
+            <div class="ec-pageHeader">
+                <h1>{{ 'front.mypage.title'|trans }}/{{ '会員登録内容変更(完了ページ)'|trans }}</h1>
+            </div>
+            {% include 'Mypage/navi.twig' %}
+        </div>
+        <div class="ec-registerCompleteRole">
+            <div class="ec-off2Grid ec-text-ac">
+                <div class="ec-off2Grid__cell">
+                    <div class="ec-reportHeading">
+                        <h2>{{ 'front.mypage.customer_complete_message__title'|trans }}</h2>
+                    </div>
+                    <p class="ec-reportDescription">{{ 'front.mypage.customer_complete_message__body'|trans }}</p>
+                    <div class="ec-off4Grid return-shopping">
+                        <div class="ec-off4Grid__cell">
+                            <p>購入手続き中の方はこちら</p>
+                            <a class="ec-blockBtn--cancel"
+                                                          href="{{ url('shopping') }}">申込手続きへ戻る</a>
+                        </div>
+                    </div>
+                    <div class="ec-off4Grid">
+                        <div class="ec-off4Grid__cell"><a class="ec-blockBtn--cancel"
+                                                          href="{{ url('homepage') }}">トップページへ戻る</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+</main>
+{% endblock %}
