@@ -23,8 +23,8 @@ file that was distributed with this source code.
 {% block main %}
 <main id="about">
 <div class="container">
-    
-    
+
+
     <div class="ec-layoutRole__main">
         <div class="ec-mypageRole">
             <div class="ec-pageHeader">
@@ -190,6 +190,18 @@ file that was distributed with this source code.
                                         </div>
                                     </dd>
                                 </dl>
+                                <dl>
+                                    <dt>
+                                        {{ form_label(form.job, 'common.mail_magazine', { 'label_attr': {'class': 'ec-label' }}) }}
+                                    </dt>
+                                    <dd>
+                                        <div class="ec-radio{{ has_errors(form.mail_magazine) ? ' error' }}">
+                                            {{ form_widget(form.mail_magazine) }}
+                                            {{ form_errors(form.mail_magazine) }}
+                                        </div>
+                                    </dd>
+                                </dl>
+
                                 {# エンティティ拡張の自動出力 #}
                                 {% for f in form|filter(f => f.vars.eccube_form_options.auto_render) %}
                                     {% if f.vars.eccube_form_options.form_theme %}

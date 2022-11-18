@@ -153,7 +153,6 @@ file that was distributed with this source code.
                     <div class="col">
                         <div class="form-row">
                             <div class="col-12">
-                                <p class="col-form-label">{{ 'admin.common.mail_magazine'|trans }}</p>
                                 {{ form_widget(searchForm.mail_magazine, { 'label_attr': { 'class': 'checkbox-inline'}}) }}
                                 {{ form_errors(searchForm.mail_magazine) }}
                             </div>
@@ -360,7 +359,11 @@ file that was distributed with this source code.
                                             <td class="align-middle"><a href="{{ url('admin_customer_edit', { 'id': Customer.id}) }}">{{ Customer.name01 }}&nbsp;{{ Customer.name02 }}</a></td>
                                             <td class="align-middle">{{ Customer.phone_number }}</td>
                                             <td class="align-middle">{{ Customer.email }}</td>
-                                            <td class="align-middle">{{ Customer.mail_magazine? '購読': '' }}</td>
+                                            <td class="align-middle">
+                                                {% if (Customer.mail_magazine) %}
+                                                    <i class="fas fa-check-circle"></i>
+                                                {% endif %}
+                                            </td>
                                             <td class="align-middle"></td>
                                             <td class="align-middle pr-3">
                                                 <div class="text-right">

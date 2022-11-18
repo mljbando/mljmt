@@ -181,17 +181,6 @@ trait ProductTrait //ファイル名と合わせる
      */
     public $temperature_zone;
 
-    /**
-     * @ORM\Column(name="visible", type="boolean", nullable=false)
-     * @Eccube\FormAppend(
-     *  auto_render=false,
-     *  options={
-     *   "required": false,
-     *   "label":"公開"
-     *  }
-     * )
-     */
-    public $visible;
 
     /**
      * @ORM\Column(name="published_at_from", type="datetimetz", options={"default": null}, nullable=true)

@@ -21,9 +21,22 @@
       -webkit-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
 }
-@media screen and (max-width:768px){
-    font-size:1.75rem;
+.p-box li{
+    position: relative;
 }
+
+@media screen and (max-width:768px){
+    .status-wrap p{
+        font-size:1.75rem;
+    }
+    .p-box li button.favorite {
+        font-size: 2rem;
+        top: 10px;
+        right: calc(52% + 10px);
+    }
+}
+
+
 </style>
 
 <div class="container">
@@ -48,7 +61,18 @@
 {% if publish_p == 1 %}
 {#author :MT end#}
 
+<button onclick="FavoriteDeleteProduct({{ Product.id }})" id="favorite" class="favorite">
+    <i class="fa-sharp fa-solid fa-heart" style="color: #FF004E;"></i>
+</button>
+
 <li>
+    {#author :MT start #}
+    
+        <button class="favorite" onclick="addFavoriteProduct({{ Product.id }})">
+            <i class="fa-sharp fa-solid fa-heart" style="color: gray;"></i>
+        </button>
+    
+    {#author :MT end #}
     <a href="{{ url('product_detail', {'id': Product.id}) }}" class="uic-itemrank__box rankingsale">
         <div class="mask">
             
@@ -63,7 +87,6 @@
             {#author :MT end#}
             
             <div class="ranktag">{{ loop.index }}</div>
-            <button class="favorite"><i class="fa-sharp fa-solid fa-heart"></i></button>
             <img class="b-pic" src="{{ asset(Product.main_list_image|no_image_product, 's3_image') }}" alt="{{ Product.name }}" loading="lazy">
             <div class="c-pic"><img src="{{ asset(Product.main_list_image|no_image_product, 's3_image') }}" alt="{{ Product.name }}" loading="lazy"></div>
             <div class="price"><p>寄付金額<span>{% if Config.item_price == 0 %}{{ Product.getPrice02IncTaxMax|number_format }}{% endif %}</span>円</p></div>
@@ -78,6 +101,49 @@
 
 {% endfor %}
 </ul>
+
+{% if BaseInfo.option_favorite_product %}
+    {# todo 共通化したい #}
+    <script type="text/javascript">
+        const apiAddFavoriteProductUrl = "{{ url('api_product_add_favorite', {id: 0}) }}";
+        function addFavoriteProduct(id)
+        {
+            const requestURL = apiAddFavoriteProductUrl.replace(/0$/, id);
+            $.ajax({
+                url: requestURL,
+                type: 'post',
+                dataType: 'json',
+            }).then((data) =>{
+                console.log(data);
+                window.location.reload();
+            }).fail((error)=> {
+                if (error.status===406) {
+                    window.location = '{{ url('mypage_login') }}'
+                }
+            });
+        }
+        const apiFavoriteDeleteProductUrl = "{{ url('refine_delete_favorite', {id:0}) }}";
+        function FavoriteDeleteProduct(id)
+        {
+            const requestURL = apiFavoriteDeleteProductUrl.replace(/0$/, id);
+            console.log(requestURL);
+            $.ajax({
+                url: requestURL,
+                type: 'post',
+                dataType: 'json',
+            }).then((data) =>{
+                console.log(data);
+                window.location.reload();
+            }).fail((error)=> {
+                if (error.status===406) {
+                    window.location = '{{ url('mypage_login') }}'
+                }
+            });
+            console.log("finish");
+        }
+    </script>
+{% endif %}
+
 {#
 <div class="ac-open"></div>
 <a class="btn ac-btn"><span>もっと見る</span></a>

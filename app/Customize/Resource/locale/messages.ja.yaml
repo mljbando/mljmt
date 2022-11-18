@@ -93,7 +93,7 @@ common.send_difference: '異なる住所に送付'
 common.send_same: '同じ住所に送付'
 common.agreement_ok: '同意する'
 common.agreement_ng: '同意しない'
-common.mail_magazine: 'メールマガジン購読'
+common.mail_magazine: '紋別市からのメールを受け取る'
 
 #====================================================================================
 # フロント画面
@@ -559,8 +559,8 @@ admin.common.payment_method: 支払方法
 admin.common.charge: 手数料
 
 
-admin.common.mail_magazine: メルマガ購読
-
+admin.common.mail_magazine: 自治体からのメール
+admin.common.mail_magazine_yes: 希望する
 
 #------------------------------------------------------------------------------------
 # ホーム

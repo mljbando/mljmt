@@ -146,7 +146,6 @@ class ProductRepository extends AbstractRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.Status = 1')
-            ->andWhere('p.visible = 1')
             ->andWhere('p.out_of_print = 0')
         ;
 
@@ -473,7 +472,6 @@ class ProductRepository extends AbstractRepository
         $qb = $this->createQueryBuilder('p')
             ->select('count(p.id) as cnt')
             ->andWhere('p.Status = 1')
-            ->andWhere('p.visible = 1')
             ->andWhere('p.out_of_print = 0')
         ;
 

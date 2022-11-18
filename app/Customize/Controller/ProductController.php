@@ -525,16 +525,16 @@ class ProductController extends AbstractController
             if ($Product->getStatus()->getId() !== ProductStatus::DISPLAY_SHOW) {
                 return false;
             }
-//
-//            if ($Product->out_of_print) {
+
+            if ($Product->out_of_print) {
+                return false;
+            }
+
+//            if ($Product->published_at_from && $Product->published_at_from > new \DateTime()) {
 //                return false;
 //            }
 //
-//            if ($Product->published_at_from > new \DateTime()) {
-//                return false;
-//            }
-//
-//            if ($Product->published_at_to <= new \DateTime()) {
+//            if ($Product->published_at_to && $Product->published_at_to <= new \DateTime()) {
 //                return false;
 //            }
 //

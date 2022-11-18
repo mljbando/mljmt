@@ -38,7 +38,8 @@ framework:
         user_data:
           base_path: '/html/user_data'
         s3_image:
-          base_path: '//d2hh8c47eynsna.cloudfront.net'
+#          base_path: '//d2hh8c47eynsna.cloudfront.net'
+          base_path: '//d2xf9yvm8p5xm3.cloudfront.net'
         # json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
     cache:
         # this value is used as part of the "namespace" generated for the cache item keys

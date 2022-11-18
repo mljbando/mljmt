@@ -11,18 +11,219 @@ file that was distributed with this source code.
 {% extends 'default_frame.twig' %}
 
 {% block main %}
-<main id="about">
+<main id="guide">
+<section class="lead">
 <div class="container">
-    
-    <div class="ec-role">
-        <div class="ec-pageHeader">
-            <h1>{{ 'ふるさと納税の仕組みと手続き'|trans }}</h1>
-        </div>
-    </div>
-    <p>ここのファイルは　コンテンツ管理＞ページ管理＞ふるさと納税の仕組みと手続き</p>
-<p>FEV作成のページソースを掲載する予定です</p>
-    
-    
+<h3>ふるさと納税とは</h3>
+<div class="inner">
+<div class="bracket1"><img src="{{ asset('assets/img/guide/guide-bra1.svg','user_data') }}" loading="lazy"></div>
+<p class="text">好きな自治体を選んで<br class="sp">寄附することで、<br>
+税金の軽減を<br class="sp">受けることができる制度です。</p>
+<div class="bracket2"><img src="{{ asset('assets/img/guide/guide-bra2.svg','user_data') }}" loading="lazy"></div>
+</div><!--/container-->
+</section>
+
+<section class="point">
+<div class="bg-gr">
+<div class="container">
+<h3>ふるさと納税<span>3</span>つのおすすめポイント</h3>
+<ul class="box">
+<li><h4>POINT 01</h4><figure><img src="{{ asset('assets/img/guide/guide1.svg','user_data') }}" loading="lazy"></figure><p class="text">地域貢献</p></li>
+<li><h4>POINT 02</h4><figure><img src="{{ asset('assets/img/guide/guide2.svg','user_data') }}" loading="lazy"></figure><p class="text">税金控除</p></li>
+<li><h4>POINT 03</h4><figure><img src="{{ asset('assets/img/guide/guide3.svg','user_data') }}" loading="lazy"></figure><p class="text">お礼の品</p></li>
+</ul>
+</div><!--/container-->
+</div><!--/bg-gr-->
+</section>
+
+<section class="outline">
+<div class="container">
+<h3>ふるさと納税の仕組み</h3>
+<div class="tax">
+<div class="Lside"><figure><img src="{{ asset('assets/img/guide/guide4.svg','user_data') }}" loading="lazy"></figure></div>
+<div class="Rside"><p class="text">ふるさと納税制度は、自治体に寄付を行うと、寄付金額のうち2,000円を越える部分は、所得税と住民税から原則として全額が控除されます。例えば、１万円の寄付をして自治体からホタテの返礼品を受け取った場合、実質2,000円でその品物を受け取れることになります。</p></div>
 </div>
+<ul class="flow">
+<li><figure class="pc"><img src="{{ asset('assets/img/guide/guide5.png','user_data') }}" loading="lazy" alt="市役所・税務署"></figure><figure class="sp"><img src="{{ asset('assets/img/guide/guide5_sp.png','user_data') }}" loading="lazy" alt="市役所・税務署"></figure></li>
+<li><figure class="pc"><img src="{{ asset('assets/img/guide/guide6.png','user_data') }}" loading="lazy" alt="納税者"></figure><figure class="sp"><img src="{{ asset('assets/img/guide/guide6_sp.png','user_data') }}" loading="lazy" alt="納税者"></figure></li>
+<li><figure class="pc"><img src="{{ asset('assets/img/guide/guide7.png','user_data') }}" loading="lazy" alt="地方自治体"></figure><figure class="sp"><img src="{{ asset('assets/img/guide/guide7_sp.png','user_data') }}" loading="lazy" alt="地方自治体"></figure></li>
+</ul>
+</div><!--/container-->
+</section>
+
+</main>
+
+<main id="howto">
+  <section class="outline">
+  <div class="container">
+  <h3>はじめてでも簡単にできる<br class="sp">ふるさと納税</h3>
+  <div class="lead"><span>3つの簡単ステップ</span>で、<br class="sp">どなたでもふるさと納税ができます。</div>
+  <ul class="box">
+  <li><a href="#step01"><h4>STEP 01</h4><figure><img src="{{ asset('assets/img/guide/howto1.svg','user_data') }}" loading="lazy"></figure><p class="text">控除上限額を<br class="sp">確認する</p></a></li>
+  <li><a href="#step02"><h4>STEP 02</h4><figure><img src="{{ asset('assets/img/guide/howto2.svg','user_data') }}" loading="lazy"></figure><p class="text">返礼品を選んで<br class="sp">申し込む</p></a></li>
+  <li><a href="#step03"><h4>STEP 03</h4><figure><img src="{{ asset('assets/img/guide/howto3.svg','user_data') }}" loading="lazy"></figure><p class="text">控除手続きを<br class="sp">する</p></a></li>
+  </ul>
+  </div><!--/container-->
+  </section>
+  
+  <div class="contents">
+  <div class="bg-gr">
+  
+  <section id="step01" class="step01">
+  <div class="container">
+  <p class="title">STEP 01</p>
+  <h3>控除上限額を確認する</h3>
+  <p class="text">「ふるさと納税」で控除される金額は、<br class="sp">年収や家族構成により異なります。<br>
+    寄付をする前に、自分の控除上限額を確認しましょう。</p>
+  <a class="btn" href="#">控除上限額早見表</a>
+  </div><!--/container-->
+  </section>
+  
+  <section id="step02" class="step02">
+  <div class="container">
+  <p class="title">STEP 02</p>
+  <h3>返礼品を選んで申し込む</h3>
+  <p class="text">応援したいプロジェクトや返礼品を選んで、申し込みます。<br>
+    紋別市には、ホタテやカニなどの豊富な海産物など、<br>
+    魅力的な返礼品もたくさんあります。<br>
+    地域を応援しながら、<br class="sp">特産品を楽しめるのもふるさと納税の特徴です。</p>
+  <a class="btn" href="{{ url('product_list') }}?orderby={{eccube_config.eccube_product_order_newer}}">お礼の品一覧</a>
+  </div><!--/container-->
+  </section>
+  
+  <section id="step03" class="step03">
+  <div class="container">
+  <p class="title">STEP 03</p>
+  <h3>控除手続きをする</h3>
+  <p class="text">税金控除の申請には2つの方法があります。</p>
+  <ul class="box">
+  <li class="Lside">
+  <div class="inner">
+  <div class="head"><h4>ワンストップ特例制度</h4></div>
+  <p class="lead"><span>両方</span>に当てはまる方が対象です。</p>
+  <p class="list">ふるさと納税で寄付したい自治体が5つ以下</p>
+  <p class="list">ほかに確定申告する必要がない</p>
+  <p class="text">ワンストップ申請書に住所や氏名を記入して<br>
+    必要書類とまとめて自治体に送るだけ！</p>
+  <div class="ac-open">
+  <dl>
+  <dt>寄付先の<br>
+    自治体数</dt>
+  <dd>1年間で寄附先は5自治体まで<br>
+    <span class="attention">※5自治体までであれば、寄附は何度でも行うことが可能です</span></dd>
+  </dl>
+  <dl>
+  <dt>申請の<br>
+    方法</dt>
+  <dd>寄附毎に、各自治体に申請書<br>
+    および本人証明書類を提出</dd>
+  </dl>
+  <dl>
+  <dt>税金控除の<br>
+    仕組み</dt>
+  <dd>住民税から全額控除（減額）</dd>
+  </dl>
+  <dl>
+  <dt>申請・申告の<br>
+    期限</dt>
+  <dd>寄附した翌年の1月10日必着</dd>
+  </dl>
+  <dl>
+  <dt>税金控除の<br>
+    時期</dt>
+  <dd>ワンストップ特例制度利用の場合は、すべて住民税からの控除となります。寄附金控除の申請をした年の6月から翌年5月まで毎月控除されます。</dd>
+  </dl>
+  </div>
+  <a class="btn ac-btn"><span>もっと詳しく</span></a>
+  </div><!--/inner-->
+  <a class="btn" href="#onestop">ワンストップ特例制度 申請方法</a>
+  </li><!--/Lside-->
+  <li class="Rside">
+  <div class="inner">
+  <div class="head"><h4>確定申告</h4></div>
+  <p class="lead"><span>いずれか</span>に当てはまる方が対象です。</p>
+  <p class="list">ふるさと納税で寄付したい自治体が6つ以上</p>
+  <p class="list">ふるさと納税以外に確定申告する必要がある</p>
+  <p class="text">どなたでも利用可能！<br>
+    一度でまとめて申請したい方向け！</p>
+  <div class="ac-open">
+  <table>
+  <dl>
+  <dt>寄付先の<br>
+    自治体数</dt>
+  <dd>制限なし<br>
+    <span class="attention">好きな自治体に好きなだけ寄附ができます</span></dd>
+  </dl>
+  <dl>
+  <dt>申請の<br>
+    方法</dt>
+  <dd>年に一度、税務署に寄附金受領証明書を<br>
+    確定申告書類と共に提出</dd>
+  </dl>
+  <dl>
+  <dt>税金控除の<br>
+    仕組み</dt>
+  <dd>所得税からの還付と、住民税からの控除</dd>
+  </dl>
+  <dl>
+  <dt>申請・申告の<br>
+    期限</dt>
+  <dd>寄附した翌年の3月15日</dd>
+  </dl>
+  <dl>
+  <dt>税金控除の<br>
+    時期</dt>
+  <dd>確定申告の場合は、申告後およそ1～2ヵ月後に所得税の還付を受け、同年6月から翌年5月まで住民税から毎月控除されます。</dd>
+  </dl>
+  </table>
+  </div>
+  <a class="btn ac-btn"><span>もっと詳しく</span></a>
+  </div><!--/inner-->
+  <a class="btn" href="https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/mechanism/deduction.html#block04
+  " target="_blank">確定申告 申請方法</a>
+  <p class="attention">※総務省の「ふるさと納税ポータルサイト」へ遷移します。</p>
+  </li><!--/Rside-->
+  </ul><!--/box-->
+  </div><!--/container-->
+  </section>
+  
+  <section id="onestop" class="onestop">
+  <div class="small container">
+  <h3>ワンストップ特例制度 申請方法</h3>
+  <div class="inner">
+  <p class="text">ふるさと納税ワンストップ特例制度の申請を行う場合、ふるさと納税を行った翌年の1月10日までに必着で、ワンストップ特例申請書（寄附金税額控除に係る申告特例申請書）と必要な添付書類を、下記住所へ郵送してください。</p>
+  <h4>書類の送付先</h4>
+  <p class="text">〒320-8790<br>
+    日本郵便株式会社 宇都宮中央郵便局<br>
+    私書箱第64号 株式会社新朝プレス</p>
+  <h4>ワンストップ特例申請書（寄附金税額控除に係る申告特例申請書）</h4>
+  <p class="text">必要事項を全て記入してください。<br>
+    また、「２．申告の特例の適用に関する事項」のチェックも忘れずに行ってください。</p>
+  <h4>個人番号確認のための添付書類</h4>
+  <p class="text">下記のいずれかのコピーを添付してください。<br>
+    ・マイナンバーカード（裏面 ※個人番号の記載がある面）<br>
+    ・マイナンバー通知カード（※通知カードの氏名、住所等が住民票の記載事項と一致しない場合は、マイナンバー通知カードは個人番号確認書類としてご利用いただけません。）<br>
+    ・個人番号が記載された住民票</p>
+  <h4>本人確認書類のための添付書類</h4>
+  <p class="text">下記のいずれかの顔写真付き書類のコピーを添付してください。<br>
+    ・マイナンバーカード(表面)<br>
+    ・運転免許証<br>
+    ・パスポート<br>
+    ・身体障害者手帳(カード型)<br>
+    ・精神障害者保健福祉手帳<br>
+    ・療育手帳(カード型)<br>
+    ・在留カード<br>
+    ・特別永住者証明書</p>
+  </div>
+  </div>
+  </div><!--/container-->
+  </section>
+  
+  </div><!--/bg-gr-->
+  </div>
+  
+
+  
+
 </main>
 {% endblock %}

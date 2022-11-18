@@ -8,7 +8,33 @@
         background:gray;
         color:white;
     }
+    .icons{
+        position: relative;   
+    }
+    .balloon1{
+        display: none;
+    }
+    .balloon{
+        position: absolute;
+        right:30px;
+        top:30px;
+        display:block;
+        padding:1rem;
+        width:282px;
+        border-radius: 10px;
+        background: white;
+    }
+    .balloon i,.balloon button{
+        font-size: 2.85rem;
+        margin-left:1rem;
+        transition:0.3s;
+        display: inline;
+    }
+    .balloon i:hover,.balloon button:hover{
+        opacity: 0.6;
+    }
 </style>
+
 {% endblock %}
 {#author :MT end #}
 
@@ -293,9 +319,29 @@
                         <ul class="marks">
                             {# <li><a><img src="{{ asset('assets/img/arrow_left.png') }}"></a></li>#}
                             <li class="icons">
-                                <button class="share">
+                                <button class="share" onclick="showBalloon()">
                                     <img src="{{ asset('assets/img/icon_share.png') }}">
                                 </button>
+                                <div class="balloon1" id="share-list">
+                                    <a href="mailto:?&body=紋別市ふるさと納税総合サイト| {{ Product.name }}%0D%0A{{ url('product_detail', {'id': Product.id}) }}">
+                                        <i class="bi bi-send"></i>    
+                                    </a>
+                                    <a href="https://twitter.com/share?url={{ url('product_detail', {'id': Product.id}) }}" target="_blank">
+                                        <i class="bi bi-twitter"></i>
+                                        </a>
+                                    
+                                        <i class="bi bi-instagram"></i>
+                                    </a>
+                                    <a href="http://line.me/R/msg/text/?{{ url('product_detail', {'id': Product.id}) }}" target="_blank" rel="nofollow noopener">
+                                        <i class="bi bi-line"></i>    
+                                    </a>
+                                    <a href="http://www.facebook.com/share.php?u={{ url('product_detail', {'id': Product.id}) }}" rel="nofollow noopener" target="_blank">
+                                        <i class="bi bi-facebook"></i>
+                                    </a>
+                                    <a onclick="copyToClipboard()">
+                                        <i class="bi bi-link-45deg"></i>    
+                                    </a>
+                                </div>
                                 {% if BaseInfo.option_favorite_product %}
                                     {% if(is_favorite) %}
                                     {#author :MT start #}
@@ -501,4 +547,27 @@
 
         </div>
     </main>
+    
+<script type="text/javascript">
+    function showBalloon(){
+        var wObjballoon	= document.getElementById("share-list");
+        if (wObjballoon.className == "balloon1"){
+        wObjballoon.className = "balloon";
+        }else{
+        wObjballoon.className = "balloon1";
+        }
+    }
+</script>
+<script>
+    function copyToClipboard(){
+        const element = document.createElement('input');
+        element.value = location.href;
+        document.body.appendChild(element);
+        element.select();
+        document.execCommand("Copy");
+        document.body.removeChild(element);
+    }
+</script>
+
+{#author :MT end#}
 {% endblock %}
