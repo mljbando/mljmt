@@ -132,15 +132,39 @@
 
         searchButton.addEventListener('click', function (e) {
             e.preventDefault();
-            window.location = '/products/list?' + new URLSearchParams(searchValues).toString();
-
+            window.location = '{{ url('product_list') }}?' + new URLSearchParams(searchValues).toString();
         });
+
 
 
         const keywordsInput = document.getElementById('input-keywords');
         keywordsInput.addEventListener('change', (e) => {
             searchValues.name = keywordsInput.value;
             updateProductCount()
+        });
+
+        const isSafari = navigator.userAgent.includes("Safari/") && navigator.userAgent.includes("Version/");
+        let isCompositionFinished = true;
+        keywordsInput.addEventListener("keydown", (e) => {
+
+            if (isSafari && isCompositionFinished) {
+                isCompositionFinished = false;
+                return;
+            }
+            if (e.key !== "Enter" || e.isComposing) {
+                return;
+            }
+            e.preventDefault();
+            searchValues.name = keywordsInput.value;
+            window.location = '{{ url('product_list') }}?' + new URLSearchParams(searchValues).toString();
+        });
+
+        keywordsInput.addEventListener("compositionstart", () => {
+            isCompositionFinished = false;
+        });
+
+        keywordsInput.addEventListener("compositionend", () => {
+            isCompositionFinished = true;
         });
 
         const minPriceInput = document.getElementById('input-min-price');
@@ -176,7 +200,7 @@
         topCategorySwitches.forEach((element) => {
             element.addEventListener('click', function (e) {
                 e.preventDefault();
-                console.log(e.currentTarget.getAttribute('id'))
+
                 searchValues.category_ids = [];
                 topCategorySwitches.forEach(element=>element.classList.add('d-none'))
                 e.currentTarget.classList.remove('d-none')
@@ -201,7 +225,6 @@
             element.addEventListener('click', function(e){
                 e.preventDefault()
                 const selectedCategoryId = e.currentTarget.getAttribute('data-category_id');
-                console.log(e.currentTarget.classList.contains('active'))
                 if (singleQuery) { // 単体
                     if (e.currentTarget.classList.contains('active')) {
                         e.currentTarget.classList.remove('active')

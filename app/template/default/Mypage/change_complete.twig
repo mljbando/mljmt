@@ -21,7 +21,60 @@ file that was distributed with this source code.
     margin-bottom:3rem;
 }
 .return-shopping{
-}    
+}
+.overlay{
+    position: fixed;
+    background: rgba(0,0,0,0.5);
+    width: 100vw;
+    height: 100vh;
+    top:0;
+    left:0;
+    z-index: 100;
+}
+.overlay-inner{
+    position: fixed;
+    background: white;
+    width: 50vw;
+    height: 40vh;
+    top: 30vh;
+    left: 25vw;
+    border-radius: 10px;
+    z-index: 101;
+    padding:4rem;
+}
+.overlay-inner > p{
+    margin-bottom:1rem;    
+}
+.btn_area button,.overlay-inner a{
+    text-align:center;
+    color:white;
+    font-weight:bold;
+    margin: 2rem auto 0;
+    display: block;
+    width: 200px;
+    height:60px;
+}
+.overlay-inner a{
+    background: red;
+    padding-top: 17px;
+}
+.overlay-inner a span{
+    margin-top:20px;    
+}
+.btn_area button{
+    background:gray;
+}
+@media screen and (max-width:765px){
+    .overlay-inner{
+        width: 75vw;
+        height: 47vh;
+        top: 30vh;
+        left: 13vw;
+        border-radius: 10px;
+        z-index: 101;
+        padding: 3rem;
+    }
+}
 </style>
 {% endblock %}
 {#author :MT end #}
@@ -60,7 +113,23 @@ file that was distributed with this source code.
             </div>
         </div>
     </div>
-    
+    <div class="overlay">
+        <div class="overlay-inner">
+            <p>購入手続き中の方で、送付先を変更する場合は下記より変更をお願いします。</p>
+            <a href="{{url('shopping_shipping_multiple')}}"><span>送付先を変更する</span></a>
+            <div class="btn_area">
+                <button>送付先を変更しない</button>
+            </div>
+        </div>
+    </div>
 </div>
 </main>
+<script type="text/javascript">
+    $(function(){
+        $(".overlay").show();
+        $(".btn_area button").click(function(){
+            $(".overlay").fadeOut();
+        });
+    });
+</script>
 {% endblock %}

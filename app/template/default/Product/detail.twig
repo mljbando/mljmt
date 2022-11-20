@@ -19,18 +19,29 @@
         right:30px;
         top:30px;
         display:block;
-        padding:1rem;
-        width:282px;
+        width:185px;
         border-radius: 10px;
         background: white;
+    }
+    #share-list a{
+        display: block;
+        border-bottom:solid 1px #777;
+        padding:1rem;
+    }
+    #share-list a:last-child{
+        border-bottom:none;        
+    }
+    #share-list a span{
+        vertical-align: super;        
     }
     .balloon i,.balloon button{
         font-size: 2.85rem;
         margin-left:1rem;
+        margin-right:1rem;
         transition:0.3s;
         display: inline;
     }
-    .balloon i:hover,.balloon button:hover{
+    .balloon a:hover{
         opacity: 0.6;
     }
 </style>
@@ -324,22 +335,19 @@
                                 </button>
                                 <div class="balloon1" id="share-list">
                                     <a href="mailto:?&body=紋別市ふるさと納税総合サイト| {{ Product.name }}%0D%0A{{ url('product_detail', {'id': Product.id}) }}">
-                                        <i class="bi bi-send"></i>    
-                                    </a>
-                                    <a href="https://twitter.com/share?url={{ url('product_detail', {'id': Product.id}) }}" target="_blank">
-                                        <i class="bi bi-twitter"></i>
-                                        </a>
-                                    
-                                        <i class="bi bi-instagram"></i>
+                                        <i class="bi bi-send"></i><span>メール</span>   
                                     </a>
                                     <a href="http://line.me/R/msg/text/?{{ url('product_detail', {'id': Product.id}) }}" target="_blank" rel="nofollow noopener">
-                                        <i class="bi bi-line"></i>    
+                                        <i class="bi bi-line"></i><span>LINE</span>       
                                     </a>
                                     <a href="http://www.facebook.com/share.php?u={{ url('product_detail', {'id': Product.id}) }}" rel="nofollow noopener" target="_blank">
-                                        <i class="bi bi-facebook"></i>
+                                        <i class="bi bi-facebook"></i><span>Facebook</span>
+                                    </a>
+                                    <a href="https://twitter.com/share?url={{ url('product_detail', {'id': Product.id}) }}" target="_blank">
+                                        <i class="bi bi-twitter"></i><span>twitter</span>   
                                     </a>
                                     <a onclick="copyToClipboard()">
-                                        <i class="bi bi-link-45deg"></i>    
+                                        <i class="bi bi-link-45deg"></i><span>リンクをコピー</span>    
                                     </a>
                                 </div>
                                 {% if BaseInfo.option_favorite_product %}
