@@ -334,8 +334,8 @@
                                     <img src="{{ asset('assets/img/icon_share.png') }}">
                                 </button>
                                 <div class="balloon1" id="share-list">
-                                    <a href="mailto:?&body=紋別市ふるさと納税総合サイト| {{ Product.name }}%0D%0A{{ url('product_detail', {'id': Product.id}) }}">
-                                        <i class="bi bi-send"></i><span>メール</span>   
+                                    <a href="https://twitter.com/share?url={{ url('product_detail', {'id': Product.id}) }}" target="_blank">
+                                        <i class="bi bi-twitter"></i><span>Twitter</span>   
                                     </a>
                                     <a href="http://line.me/R/msg/text/?{{ url('product_detail', {'id': Product.id}) }}" target="_blank" rel="nofollow noopener">
                                         <i class="bi bi-line"></i><span>LINE</span>       
@@ -343,8 +343,8 @@
                                     <a href="http://www.facebook.com/share.php?u={{ url('product_detail', {'id': Product.id}) }}" rel="nofollow noopener" target="_blank">
                                         <i class="bi bi-facebook"></i><span>Facebook</span>
                                     </a>
-                                    <a href="https://twitter.com/share?url={{ url('product_detail', {'id': Product.id}) }}" target="_blank">
-                                        <i class="bi bi-twitter"></i><span>twitter</span>   
+                                    <a href="mailto:?&body=紋別市ふるさと納税総合サイト| {{ Product.name }}%0D%0A{{ url('product_detail', {'id': Product.id}) }}">
+                                        <i class="bi bi-send"></i><span>メール</span>   
                                     </a>
                                     <a onclick="copyToClipboard()">
                                         <i class="bi bi-link-45deg"></i><span>リンクをコピー</span>    

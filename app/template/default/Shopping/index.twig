@@ -591,7 +591,6 @@ file that was distributed with this source code.
                                 <th>生年月日︓</th>
                                 <td>{{ Order.birth|date('Y年m月d日', 'asia/tokyo') }}</td>
                             </tr>
-
                         </table>
                         <a href="{{ url('mypage_change') }}" class="customerinfo-change_btn"><p>お申込者情報を修正する</p></a>
                     </div>
@@ -749,7 +748,7 @@ file that was distributed with this source code.
                                             <th>配送方法︓</th>
                                             <td>冷蔵配送</td>
                                         </tr>
-                                        {% elseif  Product.refrigerated_delivery == '1' %}
+                                        {% elseif  Product.frozen_delivery == '1' %}
                                         <tr>
                                             <th>配送方法︓</th>
                                             <td>冷凍配送</td>
@@ -779,11 +778,7 @@ file that was distributed with this source code.
                                         </tr>
                                     </table>
                                     <div class="ec-orderDelivery__change">
-                                        {% if is_granted('ROLE_USER') %}
-                                            <button class="ec-inlineBtn" data-id="{{ shipping.id }}" data-trigger="click" data-path="{{ path('shopping_shipping_multiple') }}">お届け先を変更する</button>
-                                        {% else %}
-                                            <button class="ec-inlineBtn" data-id="{{ shipping.id }}" data-trigger="click" data-path="{{ path('shopping_shipping_multiple') }}">お届け先を変更する</button>
-                                        {% endif %}
+                                        <a href="{{ url('shopping_shipping_multiple') }}" class="customerinfo-change_btn"><p>お届け先を変更する</p></a>
                                     </div>
                                 </li>
                                 {% endfor %}

@@ -35,7 +35,7 @@ file that was distributed with this source code.
     position: fixed;
     background: white;
     width: 50vw;
-    height: 40vh;
+    height: auto;
     top: 30vh;
     left: 25vw;
     border-radius: 10px;
@@ -67,8 +67,7 @@ file that was distributed with this source code.
 @media screen and (max-width:765px){
     .overlay-inner{
         width: 75vw;
-        height: 47vh;
-        top: 30vh;
+        top: 27vh;
         left: 13vw;
         border-radius: 10px;
         z-index: 101;
@@ -115,7 +114,8 @@ file that was distributed with this source code.
     </div>
     <div class="overlay">
         <div class="overlay-inner">
-            <p>購入手続き中の方で、送付先を変更する場合は下記より変更をお願いします。</p>
+            <p>購入手続き中の方で、送付先を変更する場合は下記より変更をお願いします。<br>※会員情報を変更しても送付先は自動で変更されませんのでご注意ください。
+            </p>
             <a href="{{url('shopping_shipping_multiple')}}"><span>送付先を変更する</span></a>
             <div class="btn_area">
                 <button>送付先を変更しない</button>

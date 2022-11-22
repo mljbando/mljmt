@@ -13,6 +13,95 @@ file that was distributed with this source code.
 {% set mypageno = 'index' %}
 
 {% set body_class = 'mypage' %}
+{% block stylesheet %}
+<style>
+.ec-orderRole{
+    display: block;
+}
+.ec-orderRole .ec-borderedList{
+    border-top:none;
+    margin-top:2rem;
+}
+
+.ec-cartRow__contentColumn,.ec-borderedList li{
+    border:solid 1px #72913D;
+    border-radius: 8px;
+    padding: 20px 10px;
+    max-width: 680px;
+    margin-bottom:2rem;
+}
+.ec-orderDelivery__item-wrap{
+    margin-top:2rem;
+}
+.ec-borderedList li{
+    margin-bottom:2rem;
+}
+th,td{
+    padding-bottom:1rem;
+}
+.ec-borderedList li th{
+    font-weight:normal;  
+    min-width: 120px;
+}
+.ec-borderedList li td{
+    font-size:2rem;    
+}
+.ec-borderedList li p{
+    font-weight: bold;
+    margin:2rem 0 1rem;
+}
+.ec-cartRow__name{
+    margin:2rem 0;
+}
+.ec-cartRow__name a{
+    font-size:2rem;
+    font-weight: bold;
+}
+.ec-orderPayment table,.ec-orderConfirm table{
+    margin:2rem 0;
+}
+.ec-orderPayment table th,.ec-orderConfirm table th{
+    min-width: 200px;    
+}
+.ec-orderMail{
+    border:none;
+}
+.ec-inlineBtn{
+    background: white;
+    margin:auto;
+}
+.ec-role__btn{
+    text-align:center;
+}
+.ec-orderRole__summary{
+    display: none;
+}
+@media only screen and (max-width: 480px){
+    .ec-orderPayment table th{
+        min-width: 120px;
+    }
+    .ec-orderConfirm table th,.ec-orderConfirm table td{
+        display: block;
+    }
+    .ec-orderConfirm table td{
+        margin-bottom:1rem;
+    }
+}
+@media only screen and (min-width: 768px){
+    .ec-orderRole .ec-orderRole__detail{
+        width: 100%;
+        max-width: 1100px;
+        margin:auto;
+    }
+    .ec-orderRole .ec-borderedList{
+        display: flex;
+    }
+    .ec-orderRole .ec-borderedList .ec-cartRow__contentColumn{
+        width: 47%;
+    }
+}
+</style>
+{% endblock %}
 
 {% block main %}
 <main id="about">
@@ -57,84 +146,168 @@ file that was distributed with this source code.
                     {% endif %}
 
                 </div>
+                <div class="ec-orderDelivery orderinfo">
+                    <div class="ec-rectHeading">
+                        <h2>お申込者情報</h2>
+                    </div>
+                    <div class="ec-orderDelivery__address">
+                        <table>
+                            <tr>
+                                <th>お名前</th>
+                                <td>{{ Order.name01 }}　{{ Order.name02 }}様</td>
+                            </tr>
+                            <tr>
+                                <th>お名前カナ</th>
+                                <td>{{ Order.kana01 }}　{{ Order.kana02 }}様</td>
+                            </tr>
+                            <tr>
+                                <th>郵便番号</th>
+                                <td>〒{{ Order.postal_code }}</td>
+                            </tr>
+                            <tr>
+                                <th>住所</th>
+                                <td>{{ Order.pref }}{{ Order.addr01 }}{{ Order.addr02 }}</td>
+                            </tr>
+                            <tr>
+                                <th>電話番号</th>
+                                <td>{{ Order.phone_number }}</td>
+                            </tr>
+                            <tr>
+                                <th>メールアドレス</th>
+                                <td>{{ Order.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>生年月日</th>
+                                <td>{{ Order.birth|date('Y年m月d日', 'asia/tokyo') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
                 <div class="ec-orderDelivery">
                     <div class="ec-rectHeading">
-                        <h2>{{ 'front.mypage.delivery_info'|trans }}</h2>
+                        <h2>お礼の品とお届け先</h2>
                     </div>
                     {% for Shipping in Order.Shippings %}
                         {% set isShowReducedTaxMess = false %}
-                        <div class="ec-orderDelivery__title">{{ 'front.mypage.delivery'|trans }}{% if Order.multiple %}({{ loop.index }}){% endif %}</div>
+                        <ul class="ec-borderedList">
                         {% for orderItem in Shipping.productOrderItems %}
-                            <div class="ec-orderDelivery__item">
-                                <div class="ec-imageGrid">
-                                    <div class="ec-imageGrid__img">
-                                        {% if orderItem.product is null %}
-                                            <img src="{{ asset(''|no_image_product, 's3_image') }}"/>
-                                        {% else %}
-                                            <img src="{{ asset(orderItem.Product.MainListImage|no_image_product, 's3_image') }}"
+                            <li class="ec-cartRow__contentColumn">
+                                <div class="ec-cartRow__img">
+                                    <a target="_blank" href="{{ url('product_detail', {id : orderItem.Product.id} ) }}">
+                                        <img src="{{ asset(orderItem.Product.MainListImage|no_image_product, 's3_image') }}"
                                                  alt="{{ orderItem.productName }}"/>
-                                        {% endif %}
-                                    </div>
-                                    <div class="ec-imageGrid__content">
-                                        <p>
-                                            {% if orderItem.Product is not null and orderItem.Product.Status.id == constant('Eccube\\Entity\\Master\\ProductStatus::DISPLAY_SHOW') %}
-                                                <a href="{{ url('product_detail', {'id': orderItem.Product.id}) }}">{{ orderItem.productName }}</a>
-                                            {% else %}
-                                                {{ orderItem.productName }}
-                                            {% endif %} ×{{ orderItem.quantity }} {% if is_reduced_tax_rate(orderItem) %}{{ 'common.reduced_tax_rate_symbol'|trans }}{% set isShowReducedTaxMess = true %}{% endif %}
-                                        </p>
-                                        {% if orderItem.ProductClass is not null %}
-                                            {% if orderItem.ProductClass.ClassCategory1 is not null %}
-                                                {{ orderItem.productClass.classCategory1.className.name }}：{{ orderItem.productClass.classCategory1 }}
-                                            {% endif %}
-                                            {% if orderItem.ProductClass.ClassCategory2 %}
-                                                <br>{{ orderItem.productClass.classCategory2.className.name }}：{{ orderItem.productClass.classCategory2 }}
-                                            {% endif %}
-                                        {% endif %}
-                                        <p>{{ orderItem.price_inc_tax|price }}
-                                            × {{ orderItem.quantity|number_format }}</p>
-                                        {% if orderItem.product and orderItem.price_inc_tax != orderItem.productClass.price02IncTax %}
-                                            <p class="ec-color-accent">
-                                                {{ 'front.mypage.current_price'|trans }}{{ orderItem.productClass.price02IncTax|price }}</p>
-                                            {% set remessage = true %}
-                                        {% endif %}
-
+                                    </a>
+                                </div>
+                                <div class="ec-cartRow__summary">
+                                    <div class="ec-cartRow__name">
+                                        <a target="_blank" href="{{ url('product_detail', {id : orderItem.Product.id} ) }}">{{ orderItem.productName }}</a>
                                     </div>
                                 </div>
-                            </div>
+                                <table>
+                                    {% if orderItem.Product.room_temperature_delivery == '1' %}
+                                    <tr>
+                                        <th>配送方法︓</th>
+                                        <td>常温配送</td>
+                                    </tr>
+                                    {% elseif  orderItem.Product.refrigerated_delivery == '1' %}
+                                    <tr>
+                                        <th>配送方法︓</th>
+                                        <td>冷蔵配送</td>
+                                    </tr>
+                                    {% elseif  orderItem.Product.frozen_delivery == '1' %}
+                                    <tr>
+                                        <th>配送方法︓</th>
+                                        <td>冷凍配送</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>数量︓</th>
+                                        <td>{{ orderItem.quantity|number_format }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>小計︓</th>
+                                        {% set Productsubtotal = orderItem.price * orderItem.quantity %}
+                                        <td>{{ Productsubtotal|number_format }}円</td>
+                                    </tr>
+                                </table>
+                                <p>お届け先</p>
+                                <table>
+                                    <tr>
+                                        <th>お名前︓</th>
+                                        <td>{{ Shipping.name01 }} {{ Shipping.name02 }}様</td>
+                                    </tr>
+                                    <tr>
+                                        <th>お名前カナ︓</th>
+                                        <td>{{ Shipping.kana01 }} {{ Shipping.kana02 }}様</td>
+                                    </tr>
+                                    <tr>
+                                        <th>郵便番号︓</th>
+                                        <td>〒{{ Shipping.postal_code }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>住所︓</th>
+                                        <td>
+                                        {{ Shipping.pref }}{{ Shipping.addr01 }}<br>{{ Shipping.addr02 }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>電話番号︓</th>
+                                        <td>{{ Shipping.phone_number }}</td>
+                                    </tr>
+                                </table>
+                            </li>
                         {% endfor %}
+                        </ul>
                         <p>{{ isShowReducedTaxMess ? 'common.reduced_tax_rate_messeage'|trans }}</p>
-                        <div class="ec-orderDelivery__address">
-                            <p>{{ Shipping.name01 }}&nbsp;{{ Shipping.name02 }}&nbsp;
-                                ({{ Shipping.kana01 }}&nbsp;{{ Shipping.kana02 }})</p>
-                            <p>{{ 'common.postal_symbol'|trans }}{{ Shipping.postal_code }} {{ Shipping.Pref }}{{ Shipping.addr01 }}{{ Shipping.addr02 }}</p>
-                            <p>{{ Shipping.phone_number }}</p>
-                        </div>
-                        <div class="ec-definitions--soft">
-                            <dt>{{ 'front.mypage.delivery_provider'|trans }} :</dt>
-                            <dd>{{ Shipping.shipping_delivery_name }}</dd>
-                        </div>
-                        <div class="ec-definitions--soft">
-                            <dt>{{ 'front.mypage.delivery_date'|trans }} :</dt>
-                            <dd>{{ Shipping.shipping_delivery_date|date_day_with_weekday|default('common.select__unspecified'|trans) }}</dd>
-                        </div>
-                        <div class="ec-definitions--soft">
-                            <dt>{{ 'front.mypage.delivery_time'|trans }} :</dt>
-                            <dd>{{ Shipping.shipping_delivery_time|default('common.select__unspecified'|trans) }}</dd>
-                        </div>
                     {% endfor %}
                 </div>
                 <div class="ec-orderPayment">
                     <div class="ec-rectHeading">
-                        <h2>{{ 'front.mypage.payment_info'|trans }}</h2>
+                        <h2>お支払い方法と金額</h2>
                     </div>
-                    <p>{{ 'front.mypage.payment'|trans }} : {{ Order.PaymentMethod }}</p>
+                    <table>
+                        <tr>
+                            <th>お支払い方法</th>
+                            <td>{{ Order.PaymentMethod }}</td>
+                        </tr>
+                        <tr>
+                            <th>寄付金額</th>
+                            <td>{{ Order.payment_total|price }}</td>
+                        </tr>
+                    </table>
                 </div>
                 <div class="ec-orderConfirm">
                     <div class="ec-rectHeading">
-                        <h2>{{ 'front.mypage.message'|trans }}</h2>
+                        <h2>寄付情報</h2>
                     </div>
-                    <p>{{ Order.message|default('front.mypage.message_not_found'|trans)|nl2br }}</p>
+                    <table>
+                        <tr>
+                            <th>寄付金の使い道</th>
+                            <td>{{ Order.DonationPurpose? Order.DonationPurpose.name : '' }}</td>
+                        </tr>
+                        <tr>
+                            <th>ワンストップ特例制度</th>
+                            <td>{{ Order.one_stop? '希望する': '希望しない' }}</td>
+                        </tr>
+                        <tr>
+                            <th>紋別市への応援メッセージ</th>
+                            <td>{{ Order.cheer_message }}</td>
+                        </tr>
+                        <tr>
+                            <th>応援メッセージの公表</th>
+                            <td>{{ Order.cheer_message_publish? '許可': 'しない' }}</td>
+                        </tr>
+                        <tr>
+                            <th>寄付者名の公表</th>
+                            <td>{{ Order.name_announce? '許可': 'しない' }}</td>
+                        </tr>
+                        {% if Order.offer_memo is not empty %}
+                        <tr>
+                            <th>備考</th>
+                            <td>{{ Order.offer_memo }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
                 </div>
                 <div class="ec-orderMails">
                     <div class="ec-rectHeading">
@@ -143,7 +316,7 @@ file that was distributed with this source code.
                     {% for MailHistory in Order.MailHistories %}
                         <div class="ec-orderMail">
                             <div class="ec-orderMail__time">{{ MailHistory.send_date|date_sec }}</div>
-                            <div class="ec-orderMail__link"><a>{{ MailHistory.mail_subject }}</a></div>
+                            <div class="ec-orderMail__link">寄付のお申込ありがとうございます。</div>
                             <div class="ec-orderMail__body">{{ MailHistory.mail_body|nl2br }}<p class="ec-orderMail__close"><a>{{ 'common.close'|trans }}</a></p></div>
                         </div>
                     {% else %}
@@ -190,11 +363,6 @@ file that was distributed with this source code.
                     <div class="ec-totalBox__paymentTotal">{{ 'common.total'|trans }}<span
                                 class="ec-totalBox__price">{{ Order.payment_total|price }}</span><span
                                 class="ec-totalBox__taxLabel">{{ 'common.tax_include'|trans }}</span></div>
-                    {% if stockOrder %}
-                        <a href="{{ url('mypage_order', {'order_no': Order.order_no }) }}"
-                       class="ec-blockBtn--action load-overlay" {{ csrf_token_for_anchor() }} data-method="put"
-                       data-confirm="false">{{ 'front.mypage.reorder'|trans }}</a>
-                    {% endif %}
                 </div>
                 {% if remessage %}
                     <p class="ec-color-accent">
@@ -203,8 +371,8 @@ file that was distributed with this source code.
                 {% endif %}
             </div>
         </div>
-        <div class="ec-role">
-            <a href="{{ url('mypage') }}" class="ec-inlineBtn">{{ 'common.back'|trans }}</a>
+        <div class="ec-role ec-role__btn">
+            <a href="{{ url('mypage') }}" class="ec-inlineBtn">お申込履歴一覧に戻る</a>
         </div>
     </div>
     
